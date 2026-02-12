@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="dashboard.css">
+    <title>Flight Dashboard</title>
+</head>
+
+<body>
+<div class="dashboard">
+
+    <h1>✈️ Flight Tracker Dashboard</h1>
+
+    <div class="clock" id="clock">Time:</div>
+
+    <!-- ✅ NEW CONTROLS -->
+    <div style="margin:10px 0;">
+        Airport:
+        <select id="airportSelect">
+            <option value="MNL">Manila (NAIA)</option>
+            <option value="CEB">Cebu</option>
+            <option value="DVO">Davao</option>
+            <option value="CRK">Clark</option>
+            <option value="ILO">Iloilo</option>
+        </select>
+
+        Type:
+        <select id="typeSelect">
+            <option value="dep">Departures</option>
+            <option value="arr">Arrivals</option>
+        </select>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Flight</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="flight-table"></tbody>
+    </table>
+</div>
+
+
+<script>
+/* ================= CLOCK API ================= */
+
+async function updateClock(){
+    try{
+        const res = await fetch("https://worldtimeapi.org/api/timezone/Asia/Manila");
+        const data = await res.json();
+        const date = new Date(data.datetime);
+
+        document.getElementById("clock").textContent =
+            "Local Time: " + date.toLocaleTimeString();
+    }
+    catch{
+        document.getElementById("clock").textContent =
+            "Local Time: " + new Date().toLocaleTimeString();
+    }
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+
+/* ================= FLIGHT API ================= */
+
+const API_KEY = "ab85946849bb25dc3432c6445afb6a4f";
+
+const table = document.getElementById("flight-table");
+const airportSelect = document.getElementById("airportSelect");
+const typeSelect = document.getElementById("typeSelect");
+
+
+async function loadFlights(){
+
+    const airport = airportSelect.value;
+    const type = typeSelect.value;
+
+    // dep_iata OR arr_iata depending on selection
+    const filter = type === "dep"
+        ? `dep_iata=${airport}`
+        : `arr_iata=${airport}`;
+
+    try{
+        const res = await fetch(
+            `https://api.aviationstack.com/v1/flights?access_key=${API_KEY}&${filter}&limit=12`
+        );
+
+        const result = await res.json();
+
+        table.innerHTML = "";
+
+        result.data.forEach(f => {
+
+            const flight = f.flight?.iata || "N/A";
+            const from = f.departure?.airport || "Unknown";
+            const to = f.arrival?.airport || "Unknown";
+
+            const time = f.departure?.scheduled
+                ? new Date(f.departure.scheduled).toLocaleTimeString()
+                : "--";
+
+            const status = f.flight_status || "scheduled";
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${flight}</td>
+                <td>${from}</td>
+                <td>${to}</td>
+                <td>${time}</td>
+                <td>${status.toUpperCase()}</td>
+            `;
+
+            table.appendChild(row);
+        });
+
+    } catch(err){
+        console.log(err);
+    }
+}
+
+
+/* refresh when user changes options */
+airportSelect.addEventListener("change", loadFlights);
+typeSelect.addEventListener("change", loadFlights);
+
+
+/* auto refresh */
+loadFlights();
+setInterval(loadFlights,60000);
+</script>
+
+</body>
+</html>

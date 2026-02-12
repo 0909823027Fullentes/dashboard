@@ -1,0 +1,87 @@
+body
+{    
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(40deg,#f5f7fa, #0992C2);
+    font-size: 25px;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+}   
+
+h1 {
+    text-align: center;
+    color: #fff;
+    font-size: 40px;
+    animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+    0% {
+        text-shadow: 0 0 5px cyan, 0 0 10px #fff, 0 0 20px #0992C2, 0 0 30px #0992C2;
+    }
+    50% {
+        text-shadow: 0 0 10px black, 0 0 20px #fff, 0 0 30px #0992C2, 0 0 40px #0992C2;
+    }
+    100% {
+        text-shadow: 0 0 5px blue, 0 0 10px #fff, 0 0 20px #0992C2, 0 0 30px #0992C2;
+    }
+}
+
+.dashboard
+{
+    max-width: 900px;
+    margin: auto;
+}
+
+.clock
+{
+    text-align: center;
+    font-size: 50px;
+    color: black;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+table
+{
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(9, 146, 194, 1);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    overflow: hidden;
+}
+
+th, td
+{
+    padding: 15px;
+    text-align: center;
+}
+
+th
+{
+    background-color: #0992C2;
+    color: white;
+}
+
+tr:nth-child(even)
+{
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+.on-time
+{
+    color: green;
+    font-weight: bold;
+}
+
+.delayed
+{
+    color: rgb(255, 0, 0);
+    font-weight: bold;
+}
+
+.boarding
+{
+    color: orange;
+    font-weight: bold;
+}
